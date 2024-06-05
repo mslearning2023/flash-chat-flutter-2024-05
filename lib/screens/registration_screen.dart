@@ -60,7 +60,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               color: Colors.blueAccent,
               title: 'Register',
               onPressed: () async {
-                // Navigator.pushNamed(context, RegistrationScreen.id);
                 debugPrint('email: $email, password: $password');
                 if (email != null && password != null) {
                   try {
