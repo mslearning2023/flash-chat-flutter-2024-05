@@ -11,7 +11,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _auth = FirebaseAuth.instance;
-  late User loggedInUser;
+  User? loggedInUser;
 
   void initState() {
     super.initState();
@@ -23,7 +23,7 @@ class _ChatScreenState extends State<ChatScreen> {
       final user = await _auth.currentUser;
       if (user != null) {
         loggedInUser = user;
-        debugPrint('Logged in user is ${loggedInUser.email}');
+        debugPrint('Logged in user is ${loggedInUser!.email}');
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -38,8 +38,19 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: <Widget>[
           IconButton(
               icon: Icon(Icons.close),
-              onPressed: () {
-                //Implement logout functionality
+              onPressed: () async {
+                debugPrint('Log out attempted for ${loggedInUser!.email}');
+
+                try {
+                  await _auth.signOut();
+                  User? user = await _auth.currentUser;
+                  loggedInUser = user;
+                  debugPrint('User email is - ${loggedInUser?.email}');
+                } catch (e) {
+                  debugPrint(e.toString());
+                }
+
+                Navigator.pop(context);
               }),
         ],
         title: Text('⚡️Chat'),
