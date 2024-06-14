@@ -58,6 +58,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '516783757249',
     projectId: 'fc2405',
     storageBucket: 'fc2405.appspot.com',
-    iosBundleId: 'com.maxsoe.flashChat202405',
+    iosBundleId: 'co.appbrewery.flashChat',
   );
+
 }
