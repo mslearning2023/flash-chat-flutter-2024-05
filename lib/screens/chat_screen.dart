@@ -38,6 +38,15 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void messagesStream() async {
+    await for (var snapshot
+        in _firestore.collection(MESSAGES_COLLECTION).snapshots()) {
+      for (var message in snapshot.docs) {
+        debugPrint(message.data().toString());
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,18 +91,28 @@ class _ChatScreenState extends State<ChatScreen> {
                       decoration: kMessageTextFieldDecoration,
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      _firestore.collection(MESSAGES_COLLECTION).add({
-                        SENDER_FIELD: loggedInUser!.email,
-                        TEXT_FIELD: messageText,
-                      });
-                    },
-                    child: Text(
-                      'Send',
-                      style: kSendButtonTextStyle,
+                  Column(children: [
+                    TextButton(
+                        onPressed: () {
+                          messagesStream();
+                        },
+                        child: Text('debug print')),
+                    TextButton(
+                      onPressed: () {
+                        final Map<String, dynamic> message_data = {
+                          SENDER_FIELD: loggedInUser!.email,
+                          TEXT_FIELD: messageText,
+                        };
+                        _firestore
+                            .collection(MESSAGES_COLLECTION)
+                            .add(message_data);
+                      },
+                      child: Text(
+                        'Send',
+                        style: kSendButtonTextStyle,
+                      ),
                     ),
-                  ),
+                  ]),
                 ],
               ),
             ),
