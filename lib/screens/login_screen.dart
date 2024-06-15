@@ -30,9 +30,12 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Container(
-                height: 200.0,
-                child: Image.asset('images/logo.png'),
+              // Flexible will resize the widget according to the screen size
+              Flexible(
+                child: Container(
+                  height: 500.0,
+                  child: Image.asset('images/logo.png'),
+                ),
               ),
               SizedBox(
                 height: 48.0,

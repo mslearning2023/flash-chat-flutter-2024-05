@@ -97,22 +97,24 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   Column(children: [
-                    TextButton(
-                        onPressed: () {
-                          messagesStream();
-                        },
-                        child: Text('debug print')),
+                    // TextButton(
+                    //     onPressed: () {
+                    //       messagesStream();
+                    //     },
+                    //     child: Text('debug print')),
                     TextButton(
                       onPressed: () {
-                        final Map<String, dynamic> message_data = {
-                          SENDER_FIELD: loggedInUser!.email,
-                          TEXT_FIELD: messageText,
-                        };
-                        _firestore
-                            .collection(MESSAGES_COLLECTION)
-                            .add(message_data);
+                        if (messageText != null) {
+                          final Map<String, dynamic> message_data = {
+                            SENDER_FIELD: loggedInUser!.email,
+                            TEXT_FIELD: messageText,
+                          };
+                          _firestore
+                              .collection(MESSAGES_COLLECTION)
+                              .add(message_data);
 
-                        messageTextController.clear();
+                          messageTextController.clear();
+                        }
                       },
                       child: Text(
                         'Send',
@@ -155,6 +157,7 @@ class MessagesStream extends StatelessWidget {
           }
           return Expanded(
             child: ListView(
+              reverse: true,
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
               children: messageBubbles,
             ),
@@ -176,7 +179,19 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isMe = FirebaseAuth.instance.currentUser!.email == messageSender;
+    final bool isMe = FirebaseAuth.instance.currentUser!.email == messageSender;
+    final double BUBBLE_RADIUS = 32.0;
+    final BorderRadius pointingRight = BorderRadius.only(
+      topLeft: Radius.circular(BUBBLE_RADIUS),
+      bottomLeft: Radius.circular(BUBBLE_RADIUS),
+      bottomRight: Radius.circular(BUBBLE_RADIUS),
+    );
+    final BorderRadius pointingLeft = BorderRadius.only(
+      topRight: Radius.circular(BUBBLE_RADIUS),
+      bottomLeft: Radius.circular(BUBBLE_RADIUS),
+      bottomRight: Radius.circular(BUBBLE_RADIUS),
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -203,11 +218,10 @@ class MessageBubble extends StatelessWidget {
           ),
           Material(
             color: isMe ? Colors.lightBlue : Colors.grey[600],
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
-            elevation: 3,
+            borderRadius: isMe ? pointingRight : pointingLeft,
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12),
               child: Text(
                 '$messageText',
                 style: TextStyle(fontSize: 16.0, color: Colors.white),
@@ -217,6 +231,5 @@ class MessageBubble extends StatelessWidget {
         ],
       ),
     );
-    ;
   }
 }
