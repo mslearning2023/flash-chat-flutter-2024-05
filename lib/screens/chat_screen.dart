@@ -54,21 +54,22 @@ class _ChatScreenState extends State<ChatScreen> {
         leading: null,
         actions: <Widget>[
           IconButton(
-              icon: Icon(Icons.close),
-              onPressed: () async {
-                debugPrint('Log out attempted for ${loggedInUser!.email}');
+            icon: Icon(Icons.close),
+            onPressed: () async {
+              debugPrint('Log out attempted for ${loggedInUser!.email}');
 
-                try {
-                  await _auth.signOut();
-                  User? user = await _auth.currentUser;
-                  loggedInUser = user;
-                  debugPrint('User email is - ${loggedInUser?.email}');
-                } catch (e) {
-                  debugPrint(e.toString());
-                }
+              try {
+                await _auth.signOut();
+                User? user = await _auth.currentUser;
+                loggedInUser = user;
+                debugPrint('User email is - ${loggedInUser?.email}');
+              } catch (e) {
+                debugPrint(e.toString());
+              }
 
-                Navigator.pop(context);
-              }),
+              Navigator.pop(context);
+            },
+          ),
         ],
         title: Text('⚡️Chat'),
         backgroundColor: Colors.lightBlueAccent,
@@ -78,6 +79,30 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            StreamBuilder<QuerySnapshot>(
+                stream: _firestore.collection(MESSAGES_COLLECTION).snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.lightBlueAccent,
+                      ),
+                    );
+                  }
+                  final messages = snapshot.data!.docs.reversed;
+                  List<Text> messageWidgets = [];
+                  for (var message in messages) {
+                    final messageData = message.data() as Map<String, dynamic>;
+                    final messageText = messageData[TEXT_FIELD];
+                    final messageSender = messageData[SENDER_FIELD];
+                    final messageWidget =
+                        Text('$messageSender said $messageText');
+                    messageWidgets.add(messageWidget);
+                  }
+                  return Column(
+                    children: messageWidgets,
+                  );
+                }),
             Container(
               decoration: kMessageContainerDecoration,
               child: Row(
